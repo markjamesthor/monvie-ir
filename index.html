@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>몽비스토리 — AI 개인화 동화책</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e4e4e7;
+    --text-dim: #71717a;
+    --accent: #a78bfa;
+    --accent2: #818cf8;
+    --green: #4ade80;
+    --amber: #fbbf24;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40%; left: -20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    font-weight: 600;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #e4e4e7 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--text-dim);
+    max-width: 580px;
+    margin-bottom: 3rem;
+  }
+
+  .hero-metrics {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-metric {
+    text-align: center;
+  }
+
+  .hero-metric .num {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .hero-metric .label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* Sections */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 6rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  section:first-of-type { border-top: none; }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+  }
+
+  p {
+    color: var(--text-dim);
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+  }
+
+  strong { color: var(--text); font-weight: 600; }
+
+  /* Pipeline */
+  .pipeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .pipeline .step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+  }
+
+  .pipeline .arrow {
+    color: var(--accent);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .pipeline .step-text {
+    color: var(--text);
+  }
+
+  .pipeline .step-time {
+    color: var(--green);
+    font-size: 0.75rem;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th {
+    text-align: left;
+    padding: 0.8rem 1rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .highlight-row td {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card .card-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .card .card-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .card .card-desc {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* Diff list */
+  .diff-list {
+    list-style: none;
+    margin: 1.5rem 0;
+  }
+
+  .diff-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .diff-list li:last-child { border-bottom: none; }
+
+  .diff-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    width: 1.5rem;
+  }
+
+  .diff-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  .diff-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Financial */
+  .fin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 2rem 0;
+  }
+
+  .fin-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .fin-card .year {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .fin-card .revenue {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .fin-card .profit {
+    font-size: 1.1rem;
+    color: var(--green);
+    margin-top: 0.4rem;
+    font-weight: 600;
+  }
+
+  .fin-card .margin {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+  }
+
+  /* Founder */
+  .founder-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2rem 0;
+  }
+
+  .founder-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+  }
+
+  .tag {
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(167,139,250,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(167,139,250,0.2);
+  }
+
+  /* Ask */
+  .ask-box {
+    background: linear-gradient(135deg, rgba(167,139,250,0.08) 0%, rgba(129,140,248,0.05) 100%);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .ask-amount {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .ask-sub {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  /* Use table */
+  .use-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .use-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .use-item .use-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .use-item .use-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .use-item .use-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .hero-metrics { gap: 2rem; }
+    .hero-metric .num { font-size: 1.8rem; }
+    .fin-grid { grid-template-columns: 1fr; }
+    .use-grid { grid-template-columns: 1fr; }
+    section { padding: 4rem 0; }
+    .container { padding: 0 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="logo">몽비스토리</div>
+  <h1>아이 사진이 동화책이 되는<br>AI 자동화 플랫폼</h1>
+  <p class="hero-sub">사진 업로드부터 인쇄 발주까지, 사람 개입 없이 실시간으로.</p>
+  <div class="hero-metrics">
+    <div class="hero-metric">
+      <div class="num">52.5%</div>
+      <div class="label">건당 이익률</div>
+    </div>
+    <div class="hero-metric">
+      <div class="num">225권</div>
+      <div class="label">월 손익분기</div>
+    </div>
+    <div class="hero-metric">
+      <div class="num">0명</div>
+      <div class="label">필요 인력</div>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</div>
+
+<div class="container">
+
+  <!-- Problem -->
+  <section>
+    <div class="section-label">Problem</div>
+    <h2>개인화 동화책은 전부 수동이다</h2>
+    <p>부모가 사진을 보내면 디자이너가 포토샵으로 편집한다. 1권에 3일, 인건비가 원가의 대부분. 가격은 8~15만원. <strong>스케일이 안 된다.</strong></p>
+  </section>
+
+  <!-- Solution -->
+  <section>
+    <div class="section-label">Solution</div>
+    <h2>AI가 실시간으로 만든다</h2>
+    <p>주문부터 인쇄 발주까지 <strong>사람 개입 0</strong>인 자동화 파이프라인.</p>
+
+    <div class="pipeline">
+      <div class="step">
+        <span class="step-text">사진 업로드</span>
+      </div>
+      <div class="step">
+        <span class="arrow">↓</span>
+        <span class="step-text">AI 배경 제거 (6종 모델 자동 선택)</span>
+        <span class="step-time">0.5초</span>
+      </div>
+      <div class="step">
+        <span class="arrow">↓</span>
+        <span class="step-text">포즈 분석 + 스마트 크롭</span>
+        <span class="step-time">0.3초</span>
+      </div>
+      <div class="step">
+        <span class="arrow">↓</span>
+        <span class="step-text">품질 자동 검수 (8개 항목)</span>
+        <span class="step-time">0.2초</span>
+      </div>
+      <div class="step">
+        <span class="arrow">↓</span>
+        <span class="step-text">동화책 자동 생성 + 모바일 미리보기</span>
+        <span class="step-time">즉시</span>
+      </div>
+      <div class="step">
+        <span class="arrow">↓</span>
+        <span class="step-text">부모 승인 → 인쇄 파일 생성 → 자동 발주</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Unit Economics -->
+  <section>
+    <div class="section-label">Unit Economics</div>
+    <h2>1권 팔 때마다 28,850원이 남는다</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>항목</th><th style="text-align:right">금액</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>판매가</td><td style="text-align:right">55,000원</td></tr>
+          <tr><td>인쇄 원가</td><td style="text-align:right">20,000원</td></tr>
+          <tr><td>배송비</td><td style="text-align:right">3,000원</td></tr>
+          <tr><td>결제 수수료 (3%)</td><td style="text-align:right">1,650원</td></tr>
+          <tr><td>포장/부자재</td><td style="text-align:right">1,000원</td></tr>
+          <tr><td>GPU 처리 비용</td><td style="text-align:right">500원</td></tr>
+          <tr class="highlight-row"><td><strong>건당 이익</strong></td><td style="text-align:right"><strong>28,850원 (52.5%)</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>고정비 월 650만원. <strong>하루 8권이면 흑자.</strong> 인건비 0원이기 때문에, 파는 만큼 거의 그대로 이익이 된다.</p>
+  </section>
+
+  <!-- Differentiation -->
+  <section>
+    <div class="section-label">Moat</div>
+    <h2>왜 따라잡기 어려운가</h2>
+
+    <ul class="diff-list">
+      <li>
+        <span class="diff-num">01</span>
+        <div>
+          <div class="diff-title">정신의학 기반 제품 설계</div>
+          <div class="diff-desc">창업자가 소아정신의학 전공. 매 페이지가 부모-아이 상호작용을 유도하도록 설계되어 있다. "이름이 들어간 책"이 아니라 치료적 의미가 있는 책.</div>
+        </div>
+      </li>
+      <li>
+        <span class="diff-num">02</span>
+        <div>
+          <div class="diff-title">7년, 수천 권의 수동 제작 경험</div>
+          <div class="diff-desc">어떤 사진이 인쇄에서 깨지는지, 어떤 포즈가 장면에 맞는지, 어디서 클레임이 나는지. 수천 장의 아이 사진을 직접 다뤄본 사람만 아는 것들.</div>
+        </div>
+      </li>
+      <li>
+        <span class="diff-num">03</span>
+        <div>
+          <div class="diff-title">AI 모델 6종 자체 서빙</div>
+          <div class="diff-desc">외부 API 의존 없음. 사진 특성별 최적 모델 자동 선택. 자체 GPU에서 처리하므로 아이 사진이 외부로 나가지 않는다.</div>
+        </div>
+      </li>
+      <li>
+        <span class="diff-num">04</span>
+        <div>
+          <div class="diff-title">Config-Driven 테마 시스템</div>
+          <div class="diff-desc">새 동화책 = JSON 파일 1개. 코드 수정 없이 테마 무한 확장. 이미 6개 테마 보유.</div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Market -->
+  <section>
+    <div class="section-label">Market</div>
+    <h2>시장</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-num">130만</div>
+        <div class="card-label">한국 0~5세 아동 수</div>
+        <div class="card-desc">돌잔치, 생일, 출산선물 — 반복 구매 구조</div>
+      </div>
+      <div class="card">
+        <div class="card-num">$4.5B+</div>
+        <div class="card-label">글로벌 시장 규모</div>
+        <div class="card-desc">개인화 키즈 콘텐츠 시장 (2025)</div>
+      </div>
+      <div class="card">
+        <div class="card-num">0개</div>
+        <div class="card-label">AI 자동화 달성 경쟁사</div>
+        <div class="card-desc">전부 수동. 디자이너 의존 구조</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Financials -->
+  <section>
+    <div class="section-label">Financials</div>
+    <h2>재무 전망</h2>
+
+    <div class="fin-grid">
+      <div class="fin-card">
+        <div class="year">Year 1</div>
+        <div class="revenue">16.5억</div>
+        <div class="profit">영업이익 7.0억</div>
+        <div class="margin">이익률 42% · 1→2명</div>
+      </div>
+      <div class="fin-card">
+        <div class="year">Year 2</div>
+        <div class="revenue">85.8억</div>
+        <div class="profit">영업이익 41.1억</div>
+        <div class="margin">이익률 48% · 2→5명</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Phase</th><th>월 판매량</th><th>인원</th><th style="text-align:right">월 영업이익</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Phase 0</td><td>1,000권</td><td>1명</td><td style="text-align:right">2,235만원</td></tr>
+          <tr><td>Phase 0</td><td>3,000권</td><td>1명</td><td style="text-align:right">8,005만원</td></tr>
+          <tr><td>Phase 1</td><td>10,000권</td><td>2명</td><td style="text-align:right">2.74억원</td></tr>
+          <tr class="highlight-row"><td>Phase 2</td><td>30,000권</td><td>5명</td><td style="text-align:right">8.23억원</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Founder -->
+  <section>
+    <div class="section-label">Team</div>
+    <h2>창업자</h2>
+
+    <div class="founder-box">
+      <p style="color: var(--text); font-size: 1.05rem; margin-bottom: 0.8rem;"><strong>대표 1인 + AI</strong></p>
+      <p>세 가지를 한 사람이 가지고 있다. 이 조합이 "자동화 가능하면서, 감동을 주면서, 의학적으로 의미 있는" 제품의 적정선을 찾게 했다.</p>
+
+      <div class="founder-tags">
+        <span class="tag">소아정신의학 → 제품 설계</span>
+        <span class="tag">7년 수동 제작 → 도메인 지식</span>
+        <span class="tag">AI 파이프라인 직접 개발 → 기술</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ask -->
+  <section>
+    <div class="section-label">Investment</div>
+    <h2>투자 활용 계획</h2>
+
+    <div class="ask-box">
+      <div class="ask-amount">50 ~ 100억원</div>
+      <div class="ask-sub">검증된 엔진에 연료를 넣는 투자</div>
+    </div>
+
+    <div class="use-grid">
+      <div class="use-item">
+        <div class="use-label">공격적 마케팅</div>
+        <div class="use-amount">월 5~10억</div>
+        <div class="use-desc">검증된 ROAS 채널에 집중. 월 5만건 돌파</div>
+      </div>
+      <div class="use-item">
+        <div class="use-label">해외 진출</div>
+        <div class="use-amount">10~20억</div>
+        <div class="use-desc">일본/미국 현지 인쇄·물류·마케팅</div>
+      </div>
+      <div class="use-item">
+        <div class="use-label">인쇄 내재화</div>
+        <div class="use-amount">10~15억</div>
+        <div class="use-desc">원가 2만→1만원. 마진 극대화</div>
+      </div>
+      <div class="use-item">
+        <div class="use-label">핵심 인력</div>
+        <div class="use-amount">10~15억</div>
+        <div class="use-desc">CTO + 글로벌 운영팀</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  몽비스토리 &middot; 2026
+</footer>
+
+</body>
+</html>
